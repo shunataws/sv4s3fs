@@ -1623,15 +1623,19 @@ string S3fsCurl::CalcSignature(string method, string canonical_uri, string date2
   StringCQ = method + "\n";
   if(0 == strcmp(method.c_str(),"HEAD") || 0 == strcmp(method.c_str(),"PUT") || 0 == strcmp(method.c_str(),"DELETE")){
     StringCQ += uriencode + "\n\n";
-  }else if (0 == strcmp(method.c_str(), "GET")) {
-    StringCQ +="/\n" + canonical_uri +"\n";
+  }else if (0 == strcmp(method.c_str(), "GET") && 0 == strcmp(canonical_uri.c_str(), "")) {
+    StringCQ +="/\n\n";
+  }else if (0 == strcmp(method.c_str(), "GET") && 0 == strncmp(canonical_uri.c_str(), "/",1)) {
+    StringCQ += canonical_uri +"\n\n";
+  }else if (0 == strcmp(method.c_str(), "GET") && 0 != strncmp(canonical_uri.c_str(), "/",1)) {
+    StringCQ += "/\n" + canonical_uri +"\n";
   }
   StringCQ += canonical_headers + "\n";
   StringCQ += signed_headers + "\n";
   StringCQ += payload_hash;
   unsigned char * cRequest = (unsigned char *)StringCQ.c_str();
   unsigned int cRequest_len= StringCQ.size();
-  //DPRN("SHUNDEBUGXXXPUT: %s", cRequest);
+  DPRN("SHUNDEBUGXXXPUT: %s", cRequest);
   char kSecret[128];
   unsigned char *kDate, *kRegion, *kService, *kSigning, *sRequest                  = NULL;
   unsigned int kDate_len,kRegion_len, kService_len, kSigning_len, sRequest_len     = 0;
@@ -2180,7 +2184,10 @@ int S3fsCurl::PreGetObjectRequest(const char* tpath, int fd, off_t start, ssize_
   path            = tpath;
   requestHeaders  = NULL;
   responseHeaders.clear();
+  string canonical_uri = "";
+  canonical_uri +=tpath;
 
+  DPRN("SHUNDEBUGxSIGN %s", string("DEBUG: "+canonical_uri).c_str());
   string date    = get_date();
   string date2    = get_date2();
   string date3    = get_date3();
@@ -2210,7 +2217,7 @@ int S3fsCurl::PreGetObjectRequest(const char* tpath, int fd, off_t start, ssize_
           requestHeaders,
           string("Authorization: AWS4-HMAC-SHA256 Credential=" + AWSAccessKeyId + "/" + date2 
             + "/cn-north-1/s3/aws4_request, SignedHeaders=" + signed_headers + ", Signature=" +
-          CalcSignature("GET", "", date2, canonical_headers, payload_hash, signed_headers, date3)).c_str());
+          CalcSignature("GET", canonical_uri, date2, canonical_headers, payload_hash, signed_headers, date3)).c_str());
   }
 
   // setopt
