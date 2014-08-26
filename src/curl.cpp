@@ -1635,7 +1635,7 @@ string S3fsCurl::CalcSignature(string method, string canonical_uri, string date2
   StringCQ += payload_hash;
   unsigned char * cRequest = (unsigned char *)StringCQ.c_str();
   unsigned int cRequest_len= StringCQ.size();
-  DPRN("SHUNDEBUGXXXPUT: %s", cRequest);
+  //DPRN("SHUNDEBUGXXXPUT: %s", cRequest);
   char kSecret[128];
   unsigned char *kDate, *kRegion, *kService, *kSigning, *sRequest                  = NULL;
   unsigned int kDate_len,kRegion_len, kService_len, kSigning_len, sRequest_len     = 0;
@@ -2187,7 +2187,6 @@ int S3fsCurl::PreGetObjectRequest(const char* tpath, int fd, off_t start, ssize_
   string canonical_uri = "";
   canonical_uri +=tpath;
 
-  DPRN("SHUNDEBUGxSIGN %s", string("DEBUG: "+canonical_uri).c_str());
   string date    = get_date();
   string date2    = get_date2();
   string date3    = get_date3();
@@ -2211,7 +2210,7 @@ int S3fsCurl::PreGetObjectRequest(const char* tpath, int fd, off_t start, ssize_
   }
 
 
-  DPRN("SHUNDEBUGxSIGN");
+  //DPRN("SHUNDEBUGxSIGN");
   if(!S3fsCurl::IsPublicBucket()){
     requestHeaders = curl_slist_sort_insert(
           requestHeaders,
