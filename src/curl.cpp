@@ -1623,12 +1623,12 @@ string S3fsCurl::CalcSignature(string method, string canonical_uri, string date2
   StringCQ = method + "\n";
   if(0 == strcmp(method.c_str(),"HEAD") || 0 == strcmp(method.c_str(),"PUT") || 0 == strcmp(method.c_str(),"DELETE")){
     StringCQ += uriencode + "\n\n";
-  }else if (0 == strcmp(method.c_str(), "GET") && 0 == strcmp(canonical_uri.c_str(), "")) {
+  }else if (0 == strcmp(method.c_str(), "GET") && 0 == strcmp(uriencode.c_str(), "")) {
     StringCQ +="/\n\n";
-  }else if (0 == strcmp(method.c_str(), "GET") && 0 == strncmp(canonical_uri.c_str(), "/",1)) {
-    StringCQ += canonical_uri +"\n\n";
-  }else if (0 == strcmp(method.c_str(), "GET") && 0 != strncmp(canonical_uri.c_str(), "/",1)) {
-    StringCQ += "/\n" + canonical_uri +"\n";
+  }else if (0 == strcmp(method.c_str(), "GET") && 0 == strncmp(uriencode.c_str(), "/",1)) {
+    StringCQ += uriencode +"\n\n";
+  }else if (0 == strcmp(method.c_str(), "GET") && 0 != strncmp(uriencode.c_str(), "/",1)) {
+    StringCQ += "/\n" + urlEncode2(canonical_uri) +"\n";
   }
   StringCQ += canonical_headers + "\n";
   StringCQ += signed_headers + "\n";

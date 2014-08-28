@@ -423,7 +423,7 @@ static int get_object_attribute(const char* path, struct stat* pstbuf, headers_t
     // finally, "path" object did not find. Add no object cache.
     strpath = path;  // reset original
     StatCache::getStatCacheData()->AddNoObjectCache(strpath);
-    return -2;
+    return result;
   }
 
   // if path has "_$folder$", need to cut it.
@@ -2228,22 +2228,20 @@ static int list_bucket(const char* path, S3ObjList& head, const char* delimiter)
 
   FPRNN("[path=%s]", path);
 
-  //if(delimiter && 0 < strlen(delimiter)){
-    //query += "delimiter=";
-    //query += delimiter;
-    //query += "&";
-  //}
+  if(delimiter && 0 < strlen(delimiter)){
+    query += "delimiter=";
+    query += delimiter;
+    query += "&max-keys=1000&";
+  }
   query += "prefix=";
 
   s3_realpath = get_realpath(path);
   if(0 == s3_realpath.length() || '/' != s3_realpath[s3_realpath.length() - 1]){
     // last word must be "/"
-    // query += urlEncode(s3_realpath.substr(1) + "/");
-    query += urlEncode(s3_realpath.substr(1));
+    query += urlEncode(s3_realpath.substr(1) + "/");
   }else{
     query += urlEncode(s3_realpath.substr(1));
   }
-  //query += "&max-keys=1000";
 
   while(truncated){
     string each_query = query;
