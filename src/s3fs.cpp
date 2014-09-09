@@ -2246,7 +2246,8 @@ static int list_bucket(const char* path, S3ObjList& head, const char* delimiter)
   while(truncated){
     string each_query = query;
     if(next_marker != ""){
-      each_query += "&marker=" + urlEncode(next_marker);
+      //each_query += "&marker=" + urlEncode(next_marker);
+      each_query.insert(each_query.find("&max-keys=1000&"),string("&marker=" + urlEncode(next_marker)));
       next_marker = "";
     }
     // request
