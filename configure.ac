@@ -20,7 +20,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(s3fs, 1.77)
+AC_INIT(s3fs, 1.78)
 
 AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE()
@@ -151,6 +151,12 @@ AS_IF(
     [AC_MSG_ERROR([could not set nettle without GnuTLS library])]
   )
 )
+
+dnl
+dnl For PKG_CONFIG before checking nss/gnutls.
+dnl this is redundant checking, but we need checking before following.
+dnl
+PKG_CHECK_MODULES([common_lib_checking], [fuse >= 2.8.4 libcurl >= 7.0 libxml-2.0 >= 2.6])
 
 AC_MSG_CHECKING([compile s3fs with])
 case "${auth_lib}" in
